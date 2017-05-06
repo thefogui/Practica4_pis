@@ -10,7 +10,7 @@
 #define SIZE 100
 
 int main(void){
-	int len, writeFlag;
+	int len, writeFlag, pidInt;
 	int hh, mm, ss;
 	char buffer[SIZE];
 
@@ -18,6 +18,7 @@ int main(void){
     pid = getpid(); //Identificador del proceso padre
 
 	writeFlag = writePid("principal.pid", pid);
+	pidInt = readPid("principal.pid");
 
 	ss = 23;
 	mm = 9;

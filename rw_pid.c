@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include <fcntl.h>
+#include "rw_pid.h"
 
 int writePid(char* path, pid_t pid){
 	int file, writeFlag;	
