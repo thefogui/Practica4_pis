@@ -9,17 +9,15 @@
 
 #define SIZE 100
 
-//enviar pid al fichero rw_pid.c rw_pid(arg)
-
 int main(void){
-	int len;
+	int len, writeFlag;
 	int hh, mm, ss;
 	char buffer[SIZE];
 
 	pid_t pid;
     pid = getpid(); //Identificador del proceso padre
 
-	writePid("principal.pid", pid);
+	writeFlag = writePid("principal.pid", pid);
 
 	ss = 23;
 	mm = 9;
