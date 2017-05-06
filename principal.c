@@ -9,6 +9,23 @@
 
 #define SIZE 100
 
+
+void handler(){
+	int pidSegundos, pidMinutos, pidHoras;
+	write(2, "Signal SIGCONT received", 43);
+	pidSegundos = readPid("segundos.pid");
+	printf("%d\n", pidSegundos);
+	pidMinutos = readPid("minutos.pid");
+	printf("%d\n", pidMinutos);
+	pidHoras = readPid("horas.pid");
+	printf("%d\n", pidHoras);
+}
+
+void pause_process(){
+	signal(SIGCONT, handler);
+	pause();
+}
+
 int main(void){
 	int len, writeFlag, pidInt;
 	int hh, mm, ss;
@@ -16,7 +33,7 @@ int main(void){
 
 	pid_t pid;
     pid = getpid(); //Identificador del proceso padre
-
+	printf("%d\n", pid);
 	writeFlag = writePid("principal.pid", pid);
 	pidInt = readPid("principal.pid");
 
@@ -28,6 +45,6 @@ int main(void){
 
 	len = strlen(buffer);
 	write(1, buffer, len);
-	while(1);
+	pause_process();
 	return 0;
 }
