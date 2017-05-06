@@ -17,7 +17,6 @@ int main(void){
 	char buffer[SIZE];
 
 	pid_t pid;
-	int filePid;
     pid = getpid(); //Identificador del proceso padre
 
 	writePid("principal.pid", pid);
