@@ -9,16 +9,15 @@
 
 #define SIZE 100
 
-
 void handler(){
 	int pidSegundos, pidMinutos, pidHoras;
-	write(2, "Signal SIGCONT received", 43);
+	write(2, "Signal SIGCONT received\n", 43);
 	pidSegundos = readPid("segundos.pid");
-	printf("%d\n", pidSegundos);
 	pidMinutos = readPid("minutos.pid");
-	printf("%d\n", pidMinutos);
 	pidHoras = readPid("horas.pid");
-	printf("%d\n", pidHoras);
+	kill(pidSegundos, SIGCONT);
+	kill(pidHoras, SIGCONT);
+	kill(pidMinutos, SIGCONT);
 }
 
 void pause_process(){

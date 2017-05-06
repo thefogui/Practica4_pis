@@ -1,9 +1,18 @@
-default: temporizador_digital
+default: temporizador_digital segundos minutos horas
 
 # To create the executable file myprog we need the object files
 
-temporizador_digital: principal.o segundos.o minutos.o horas.o rw_pid.o
-	gcc principal.o segundos.o minutos.o horas.o rw_pid.o -o temporizador_digital
+temporizador_digital: principal.o rw_pid.o
+	gcc principal.o rw_pid.o -o temporizador_digital
+
+segundos: segundos.o rw_pid.o
+	gcc segundos.o rw_pid.o -o segundos
+
+minutos: minutos.o rw_pid.o
+	gcc minutos.o  rw_pid.o -o minutos
+
+horas: horas.o rw_pid.o
+	gcc horas.o rw_pid.o -o horas
 
 # Creating object files
 principal.o: principal.c
@@ -22,4 +31,4 @@ rw_pid.o: rw_pid.c
 # files and *~ backup files:
 #
 clean:
-	$(RM) temporizador_digital *.o *~
+	$(RM) temporizador_digital segundos minutos horas *.o *~
