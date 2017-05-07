@@ -8,15 +8,24 @@
 #include "rw_pid.h"
 
 int seg = 0;
+char buffer[12];
 
 void handler_seg(){
 	seg = 0;
-	printf("Here\n");
+	sprintf(buffer, "seg: %02d\n", seg);
+	write(1, buffer, strlen(buffer));
+
 }
 
 void pause_process(){
 	signal(SIGCONT, handler_seg);
 	pause();
+}
+
+void sumar(){
+	seg++;
+	kill(getpid(), SIGUSR1);
+	signal(SIGCONT, handler_seg);
 }
 
 int main(void){
@@ -27,5 +36,9 @@ int main(void){
 	writeFlag = writePid("segundos.pid", pid);
 	pidInt = readPid("segundos.pid");
 	pause_process();
+
+	signal(SIGALRM, sumar);
+	alarm(1);
+
 	return 0;
 }
