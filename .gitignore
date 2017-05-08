@@ -2,3 +2,7 @@ principal.o
 segundos.o
 horas.o
 minutos.o
+principal.pid
+horas.pid
+minutos.pid
+segundos.pid

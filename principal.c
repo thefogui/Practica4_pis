@@ -9,49 +9,91 @@
 
 #define SIZE 100
 
-void handlerSeg() {
-	printf("Alarm every sec\n");
-	write(1, "Signal SIGUSR1 received\n", 43);
+int hh, mm, ss, len;
+char buffer[SIZE];
+
+void sumar_seg(){
+	ss ++;
+}
+
+void sumar_min(){
+	mm ++;
+}
+
+void sumar_hora(){
+	hh ++;
 }
 
 void handler(){
 	int pidSegundos, pidMinutos, pidHoras;
-	write(1, "Signal SIGCONT received\n", 43);
+	write(1, "Signal SIGCONT received - iniciando contador\n", 60);
+
+	//leemos los PID de los procesos
 	pidSegundos = readPid("segundos.pid");
 	pidMinutos = readPid("minutos.pid");
 	pidHoras = readPid("horas.pid");
-	kill(pidSegundos, SIGCONT);
+
+	//reactivamos los procesos
 	kill(pidHoras, SIGCONT);
 	kill(pidMinutos, SIGCONT);
+	kill(pidSegundos, SIGCONT);
+}
+
+void handlerSeg() {
+	sumar_seg();
+	write(1, "Signal SIGUSR1 received\n", 43);
+}
+
+void handlerMin(){
+	sumar_min();
+	write(1, "Signal SIGUSR2 received\n", 43);
+}
+
+void imprimir_contador(){
+	//definimos el formato de la cdena
+	sprintf(buffer, "%02d:%02d:%02d\n", hh, mm, ss);
+	len = strlen(buffer);
+	//se imprime con la funcion write
+	write(1, buffer, len);
+}
+
+void handlerTerm(){
+	//leemos los PID de los procesos
+	pidSegundos = readPid("segundos.pid");
+	pidMinutos = readPid("minutos.pid");
+	pidHoras = readPid("horas.pid");
+	//envia una señal de finalizacion a todos los otros processos
+	kill(pidHoras, SIGTERM);
+	kill(pidMinutos, SIGTERM);
+	kill(pidSegundos, SIGTERM);
+	exit(-1); //finaliza el processos
 }
 
 void pause_process(){
 	while(1){
-		signal(SIGCONT, handler);
-		signal(SIGUSR1, handlerSeg);
+		signal(SIGCONT, handler); //si hay un SIGCONT envia un SIGCONT a los otros processos
+		signal(SIGUSR1, handlerSeg); //si hay SIGUSR1 los segundos se suman 1
+		signal(SIGUSR2, handlerMin); //si hay SIGUSR2 los minutos se suman 1
+		signal(SIGTERM, handlerTerm); //finaliza todo los processos
+		signal(SIGALRM, imprimir_contador); //imprime en contador
 		pause();
 	}
 }
 
 int main(void){
-	int len, writeFlag, pidInt;
-	int hh, mm, ss;
-	char buffer[SIZE];
-
+	int writeFlag, pidInt;
 	pid_t pid;
     pid = getpid(); //Identificador del proceso padre
-	printf("%d\n", pid);
+	//escribe y leer el pid si hay error imprime por pantalla
+	//por medio de la funcion write
 	writeFlag = writePid("principal.pid", pid);
+	if(writePid == 1){
+		write(2, "THere was an error writing principal.pid", 50);
+	}
 	pidInt = readPid("principal.pid");
-	if(pidInt == 1 || write)
-	ss = 23;
-	mm = 9;
-	hh = 0;
-
-	sprintf(buffer, "%02d:%02d:%02d\n", hh, mm, ss);
-
-	len = strlen(buffer);
-	write(1, buffer, len);
-	pause_process();
+	if(pidInt == 1){
+		write(2, "THere was an error reading principal.pid", 50);
+	}
+	pause_process(); // se queda en pause esperando una señal
 	return 0;
 }

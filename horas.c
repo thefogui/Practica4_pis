@@ -8,17 +8,23 @@
 #include "rw_pid.h"
 
 int horas = 0;
+
 int pidPrincipal;
 int init = 0;
+char buffer[12];
+int minutos;
 
 void handler_hour(){
 	if(init == 0){
 		horas = 0;
-		printf("Here\n");
 	}else{
+		init = 1;
 		horas += 1;
-		//TODO: buscar que señal recibe el principal
-		kill(pidPrincipal, SIGUSR1);
+		pidPrincipal = readPid("principal.pid");
+		if(pidPrincipal == 1){
+			write(2, "Error reading pid principal from horas.c\n", 60);
+		}
+		kill(pidPrincipal, SIGCONT);
 		if(horas == 24){
 			horas = 0;
 		}
@@ -26,8 +32,18 @@ void handler_hour(){
 }
 
 void pause_process(){
-	signal(SIGCONT, handler_hour);
-	pause();
+	while(1){
+		signal(SIGCONT, handler_hour);
+		pause();
+	}
+}
+
+void sumar_hora(){
+	if(minutos > 60){
+		minutos=0;
+		horas++;
+		signal(SIGCONT, sumar_hora);
+	}
 }
 
 int main(void){
@@ -37,8 +53,13 @@ int main(void){
     pid = getpid(); //Identificador del proceso padre
 
 	writeFlag = writePid("horas.pid", pid);
+	if(writeFlag == 1){
+		write(2, "Error writing pid horas\n", 43);
+	}
 	pidInt = readPid("horas.pid");
-	pidPrincipal = readPid("principal.pid");
+	if(pidInt == 1){
+		write(2, "Error reading pid horas\n", 44);
+	}
 	pause_process();
 	return 0;
 }

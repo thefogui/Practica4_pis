@@ -1,10 +1,9 @@
 #!/bin/bash
-#@Author Vitor Carvalho
+#@Author Vitor Carvalho y Rocio
 
-# pedro.herruzo@ub.edu
-chmod u+x limpiar.sh
-./limpiar.sh
-rm *.pid #elimina los ficheros pid ya existentes
+chmod u+x limpiar.sh #permiso de ejecucion
+./limpiar.sh        #llamada al fichero limpiar
+
 make #inicia los ficheros c por medio del fichero makefile
 ./segundos &
 ./minutos &
