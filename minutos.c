@@ -8,15 +8,31 @@
 #include "rw_pid.h"
 
 int minutos = 0;
+int pidPrincipal = 0;
+int init = 0;
+int horas_pid;
 
 void handler_min(){
- 	minutos = 0;
-	printf("Here\n");
+    if(init == 0){
+        minutos = 0;
+        printf("Here\n");
+        init = 1;
+    }else{
+        minutos +=1;
+        pidPrincipal = readPid("principal.pid");
+        kill(pidPrincipal, SIGUSR2);
+        if(minutos == 60){
+            minutos = 0;
+            kill(horas_pid, SIGCONT);
+        }
+    }
 }
 
 void pause_process(){
-	signal(SIGCONT, handler_min);
-	pause();
+    while(1){
+        signal(SIGCONT, handler_min);
+	    pause();
+    }
 }
 
 int main(void){
@@ -27,6 +43,7 @@ int main(void){
 
 	writeFlag = writePid("minutos.pid", pid);
 	pidInt = readPid("minutos.pid");
-	pause_process();
+    horas_pid = readPid("horas.pid");
+    pause_process();
 	return 0;
 }

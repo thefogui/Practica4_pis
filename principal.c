@@ -10,12 +10,13 @@
 #define SIZE 100
 
 void handlerSeg() {
-	printf("Alarm every sec");
+	printf("Alarm every sec\n");
+	write(1, "Signal SIGUSR1 received\n", 43);
 }
 
-void handler(int sign){
+void handler(){
 	int pidSegundos, pidMinutos, pidHoras;
-	write(2, "Signal SIGCONT received\n", 43);
+	write(1, "Signal SIGCONT received\n", 43);
 	pidSegundos = readPid("segundos.pid");
 	pidMinutos = readPid("minutos.pid");
 	pidHoras = readPid("horas.pid");
@@ -42,7 +43,7 @@ int main(void){
 	printf("%d\n", pid);
 	writeFlag = writePid("principal.pid", pid);
 	pidInt = readPid("principal.pid");
-
+	if(pidInt == 1 || write)
 	ss = 23;
 	mm = 9;
 	hh = 0;

@@ -8,10 +8,21 @@
 #include "rw_pid.h"
 
 int horas = 0;
+int pidPrincipal;
+int init = 0;
 
 void handler_hour(){
-	horas = 0;
-	printf("Here\n");
+	if(init == 0){
+		horas = 0;
+		printf("Here\n");
+	}else{
+		horas += 1;
+		//TODO: buscar que señal recibe el principal
+		kill(pidPrincipal, SIGUSR1);
+		if(horas == 24){
+			horas = 0;
+		}
+	}
 }
 
 void pause_process(){
@@ -27,6 +38,7 @@ int main(void){
 
 	writeFlag = writePid("horas.pid", pid);
 	pidInt = readPid("horas.pid");
+	pidPrincipal = readPid("principal.pid");
 	pause_process();
 	return 0;
 }

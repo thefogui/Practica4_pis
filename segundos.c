@@ -8,13 +8,14 @@
 #include "rw_pid.h"
 
 int seg = 0;
-int principal_pid = 0;
+int pidPrincipal = 0;
 
 void handler_alarm(){
     int minutos_pid;
     seg += 1;
-    principal_pid == readPid("principal.pid");
-    kill(principal_pid, SIGUSR1);
+    pidPrincipal = readPid("principal.pid");
+    printf("%d\n", pidPrincipal);
+    kill(pidPrincipal, SIGUSR1);
     if(seg = 60){
         seg = 0;
         minutos_pid = readPid("minutos.pid");
@@ -23,11 +24,10 @@ void handler_alarm(){
 }
 
 void handler_seg(){
-
 	seg = 0;
 	printf("Here\n");
-	signal(SIGALRM, handler_alarm);
-    while (1) {
+    while(1) {
+        signal(SIGALRM, handler_alarm);
         alarm(1);
     }
 }

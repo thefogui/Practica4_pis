@@ -37,7 +37,9 @@ int readPid(char* path){
 		return 1;
   	}
 
-	if(close(file) < 0)
-		write(2, "There was an error closing the file\n", 45);
+	if(close(file) < 0) {
+		write(2, "There was an error closing the file, can't read file\n", 45);
+		return -1;
+	}
 	return pid;
 }
