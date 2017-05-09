@@ -58,6 +58,7 @@ void imprimir_contador(){
 }
 
 void handlerTerm(){
+	int pidSegundos, pidMinutos, pidHoras;
 	//leemos los PID de los procesos
 	pidSegundos = readPid("segundos.pid");
 	pidMinutos = readPid("minutos.pid");
@@ -83,11 +84,13 @@ void pause_process(){
 int main(void){
 	int writeFlag, pidInt;
 	pid_t pid;
+	ss=0;
+	mm=0;
+	hh=0;
     pid = getpid(); //Identificador del proceso padre
 	//escribe y leer el pid si hay error imprime por pantalla
 	//por medio de la funcion write
-	writeFlag = writePid("principal.pid", pid);
-	if(writePid == 1){
+	if(writePid("principal.pid", pid) == 1){
 		write(2, "THere was an error writing principal.pid", 50);
 	}
 	pidInt = readPid("principal.pid");

@@ -1,4 +1,4 @@
-default: temporizador_digital segundos minutos horas
+default: segundos minutos horas temporizador_digital
 
 # To create the executable file myprog we need the object files
 
@@ -9,7 +9,7 @@ segundos: segundos.o rw_pid.o
 	gcc segundos.o rw_pid.o -o segundos
 
 minutos: minutos.o rw_pid.o
-	gcc minutos.o rw_pid.o -o minutos
+	gcc minutos.o  rw_pid.o -o minutos
 
 horas: horas.o rw_pid.o
 	gcc horas.o rw_pid.o -o horas
