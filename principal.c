@@ -23,8 +23,10 @@ void sumar_seg(){
 }
 
 void sumar_min(){ //falta comprobar 60
-	if(mm == 60)
-		mm = 0;	
+	if(mm == 60){
+		mm = 0;
+		sumar_hora();
+	}	
 	mm ++;
 }
 
