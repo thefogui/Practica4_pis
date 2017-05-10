@@ -13,3 +13,4 @@ kill $(ps -ef | grep "horas" | grep -v "grep" | awk '{print $2}')
 kill $(ps -ef | grep "temporizador_digital" | grep -v "grep" | awk '{print $2}')
 
 rm *.pid #elimina los ficheros pid ya existentes
+make clean

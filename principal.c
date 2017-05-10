@@ -1,3 +1,7 @@
+/*
+#@Author Vitor Carvalho y Rocío Márquez
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,14 +13,18 @@
 
 #define SIZE 100
 
-int hh, mm, ss, len;
+int hh, mm, ss, len, init;
 char buffer[SIZE];
 
 void sumar_seg(){
 	ss ++;
+	if(ss == 60 )
+		ss = 0;
 }
 
-void sumar_min(){
+void sumar_min(){ //falta comprobar 60
+	if(mm == 60)
+		mm = 0;	
 	mm ++;
 }
 
@@ -25,28 +33,31 @@ void sumar_hora(){
 }
 
 void handler(){
-	int pidSegundos, pidMinutos, pidHoras;
-	write(1, "Signal SIGCONT received - iniciando contador\n", 60);
+	if(init == 0){
+		int pidSegundos, pidMinutos, pidHoras;
+		write(1, "Signal SIGCONT received - iniciando contador\n", 60);
 
-	//leemos los PID de los procesos
-	pidSegundos = readPid("segundos.pid");
-	pidMinutos = readPid("minutos.pid");
-	pidHoras = readPid("horas.pid");
+		//leemos los PID de los procesos
+		pidSegundos = readPid("segundos.pid");
+		pidMinutos = readPid("minutos.pid");
+		pidHoras = readPid("horas.pid");
 
-	//reactivamos los procesos
-	kill(pidHoras, SIGCONT);
-	kill(pidMinutos, SIGCONT);
-	kill(pidSegundos, SIGCONT);
+		//reactivamos los procesos
+		kill(pidHoras, SIGCONT);
+		kill(pidMinutos, SIGCONT);
+		kill(pidSegundos, SIGCONT);
+		init++;	
+	}else{
+		sumar_hora();	
+	}
 }
 
 void handlerSeg() {
 	sumar_seg();
-	write(1, "Signal SIGUSR1 received\n", 43);
 }
 
 void handlerMin(){
 	sumar_min();
-	write(1, "Signal SIGUSR2 received\n", 43);
 }
 
 void imprimir_contador(){
@@ -70,33 +81,30 @@ void handlerTerm(){
 	exit(-1); //finaliza el processos
 }
 
-void pause_process(){
-	while(1){
-		signal(SIGCONT, handler); //si hay un SIGCONT envia un SIGCONT a los otros processos
-		signal(SIGUSR1, handlerSeg); //si hay SIGUSR1 los segundos se suman 1
-		signal(SIGUSR2, handlerMin); //si hay SIGUSR2 los minutos se suman 1
-		signal(SIGTERM, handlerTerm); //finaliza todo los processos
-		signal(SIGALRM, imprimir_contador); //imprime en contador
-		pause();
-	}
-}
-
 int main(void){
 	int writeFlag, pidInt;
 	pid_t pid;
 	ss=0;
 	mm=0;
 	hh=0;
-    pid = getpid(); //Identificador del proceso padre
+	init = 0;
+    	pid = getpid(); //Identificador del proceso padre
 	//escribe y leer el pid si hay error imprime por pantalla
 	//por medio de la funcion write
 	if(writePid("principal.pid", pid) == 1){
-		write(2, "THere was an error writing principal.pid", 50);
+		write(2, "There was an error writing principal.pid", 50);
 	}
 	pidInt = readPid("principal.pid");
 	if(pidInt == 1){
-		write(2, "THere was an error reading principal.pid", 50);
+		write(2, "There was an error reading principal.pid", 50);
 	}
-	pause_process(); // se queda en pause esperando una señal
+	signal(SIGCONT, handler); //si hay un SIGCONT envia un SIGCONT a los otros processos
+	signal(SIGUSR1, handlerSeg); //si hay SIGUSR1 los segundos se suman 1
+	signal(SIGUSR2, handlerMin); //si hay SIGUSR2 los minutos se suman 1
+	signal(SIGTERM, handlerTerm); //finaliza todo los processos
+	signal(SIGALRM, imprimir_contador); //imprime en contador
+	while(1){	
+		pause();
+	}	// se queda en pause esperando una señal
 	return 0;
 }

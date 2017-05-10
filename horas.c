@@ -1,3 +1,6 @@
+/*
+#@Author Vitor Carvalho y Rocío Márquez
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,42 +10,30 @@
 #include <unistd.h>
 #include "rw_pid.h"
 
-int horas = 0;
 
 int pidPrincipal;
 int init = 0;
 char buffer[12];
 int minutos;
 
+void handler_term(){
+	exit(-1);
+}
+
 void handler_hour(){
 	if(init == 0){
-		horas = 0;
-	}else{
-		init = 1;
-		horas += 1;
+		minutos = 0;
 		pidPrincipal = readPid("principal.pid");
 		if(pidPrincipal == 1){
 			write(2, "Error reading pid principal from horas.c\n", 60);
 		}
-		kill(pidPrincipal, SIGCONT);
-		if(horas == 24){
-			horas = 0;
+		init = 1; //cambia el valor si no es el primer sigcont que recibe
+	}else{
+		minutos += 1; //se incremneta si recibe un SIGCONT
+		if(minutos == 60){
+			minutos = 0;
+			kill(pidPrincipal, SIGCONT); //Envia un sigcont al principal
 		}
-	}
-}
-
-void pause_process(){
-	while(1){
-		signal(SIGCONT, handler_hour);
-		pause();
-	}
-}
-
-void sumar_hora(){
-	if(minutos > 60){
-		minutos=0;
-		horas++;
-		signal(SIGCONT, sumar_hora);
 	}
 }
 
@@ -50,7 +41,7 @@ int main(void){
 	int writeFlag, pidInt;
 
 	pid_t pid;
-    pid = getpid(); //Identificador del proceso padre
+    	pid = getpid(); //Identificador del proceso padre
 
 	writeFlag = writePid("horas.pid", pid);
 	if(writeFlag == 1){
@@ -60,6 +51,11 @@ int main(void){
 	if(pidInt == 1){
 		write(2, "Error reading pid horas\n", 44);
 	}
-	pause_process();
+	signal(SIGCONT, handler_hour);
+	signal(SIGTERM, handler_term);
+	
+	while(1){
+		pause();
+	}
 	return 0;
 }

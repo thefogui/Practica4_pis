@@ -1,3 +1,7 @@
+
+#@Author Vitor Carvalho y Rocío Márquez
+
+
 default: segundos minutos horas temporizador_digital
 
 # To create the executable file myprog we need the object files
