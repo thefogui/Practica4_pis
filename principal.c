@@ -22,6 +22,13 @@ void sumar_seg(){
 		ss = 0;
 }
 
+void sumar_hora(){
+	if(hh == 99){
+		hh = 0;
+	}
+	hh ++;	
+}
+
 void sumar_min(){ //falta comprobar 60
 	if(mm == 60){
 		mm = 0;
@@ -30,9 +37,7 @@ void sumar_min(){ //falta comprobar 60
 	mm ++;
 }
 
-void sumar_hora(){
-	hh ++;
-}
+
 
 void handler(){
 	if(init == 0){
